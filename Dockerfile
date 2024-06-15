@@ -12,7 +12,12 @@ RUN npm install
 COPY . .
 
 # Expose the port that your application will run on
-EXPOSE 5000
+EXPOSE 8080
+
+# Set environment variables (will be overridden by GitHub Actions)
+ENV GOOGLE_CLOUD_KEYFILE=""
+ENV FIREBASE_DATABASE_URL=""
+ENV KEY_JWT=""
 
 # Start the application
 CMD ["npm", "run", "start"]
