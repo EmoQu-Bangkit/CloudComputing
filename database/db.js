@@ -1,5 +1,4 @@
 // db.js
-const Firestore = require('@google-cloud/firestore');
 const admin = require('firebase-admin');
 const dotenv = require('dotenv');
 
@@ -17,11 +16,8 @@ const initializeFirestoreAndAuth = () => {
       databaseURL: databaseURL
     });
 
-    // Initialize Firestore with the key
-    const db = new Firestore({
-      projectId: serviceAccountKey.project_id,
-      credentials: serviceAccountKey,
-    });
+    // Initialize Firestore
+    const db = admin.firestore();
 
     return { db, admin };
   } catch (error) {
