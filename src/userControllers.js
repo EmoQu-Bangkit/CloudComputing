@@ -68,7 +68,7 @@ const userLogin = async (req, res) => {
             lastName: user.lastName,
             email: user.email
         };
-        const token = jwt.sign(data, process.env.key_JWT, { expiresIn: "1d" });
+        const token = jwt.sign(data, process.env.KEY_JWT, { expiresIn: "1d" });
 
         res.send({
             error: false,

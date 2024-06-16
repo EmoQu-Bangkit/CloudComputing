@@ -5,7 +5,7 @@ require('dotenv').config();
 const verifyToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
     if (authHeader) {
-      jsonToken.verify(authHeader, process.env.key_JWT, (err, user) => {
+      jsonToken.verify(authHeader, process.env.KEY_JWT, (err, user) => {
         if (err) {
           return res.status(403).json({ error: true, message: "Token is invalid!" });
         }
