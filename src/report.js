@@ -3,24 +3,19 @@ const dbPromise = require("../database/db.js");
 const { nanoid } = require("nanoid");
 
 class Report {
-  constructor(userId, timeStamp, dating, eating, entertainment, selfCare, sleep, study, traveling, work, workout, predictedDayCondition, predictedDayLabel, positive, negative, netral) {
+  constructor(userId, dating, eating, entertainment, selfCare, sleep, study, traveling, work, workout) {
     this.id = nanoid(16);
     this.userId = userId;
-    this.timeStamp = timeStamp;
-    this.dating = dating;
-    this.eating = eating;
-    this.entertainment = entertainment;
-    this.selfCare = selfCare;
-    this.sleep = sleep;
-    this.study = study;
-    this.traveling = traveling;
-    this.work = work;
-    this.workout = workout;
-    this.predictedDayCondition = predictedDayCondition;
-    this.predictedDayLabel = predictedDayLabel;
-    this.positive = positive;
-    this.negative = negative;
-    this.netral = netral;
+    this.timeStamp = new Date().toISOString().split('T')[0];  // Generate timeStamp automatically
+    this.dating = Number(dating);
+    this.eating = Number(eating);
+    this.entertainment = Number(entertainment);
+    this.selfCare = Number(selfCare);
+    this.sleep = Number(sleep);
+    this.study = Number(study);
+    this.traveling = Number(traveling);
+    this.work = Number(work);
+    this.workout = Number(workout);
   }
 
   static async get(userId, reportId) {
@@ -52,14 +47,19 @@ class Report {
       study: this.study,
       traveling: this.traveling,
       work: this.work,
-      workout: this.workout,
-      predictedDayCondition: this.predictedDayCondition,
-      predictedDayLabel: this.predictedDayLabel,
-      positive: this.positive,
-      negative: this.negative,
-      netral: this.netral,
+      workout: this.workout
     });
     return this;
+  }
+
+  static async update(userId, reportId, updates) {
+    const { db } = await dbPromise;
+    await db.collection("users").doc(userId).collection("reports").doc(reportId).update({
+      ...updates,
+      positive: updates.positive !== undefined ? Number(updates.positive) : undefined,
+      negative: updates.negative !== undefined ? Number(updates.negative) : undefined,
+      netral: updates.netral !== undefined ? Number(updates.netral) : undefined
+    });
   }
 }
 

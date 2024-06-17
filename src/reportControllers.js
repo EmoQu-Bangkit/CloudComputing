@@ -3,17 +3,17 @@ const Report = require('./report');
 
 const createReport = async (req, res) => {
   try {
-    const { timeStamp, dating, eating, entertainment, selfCare, sleep, study, traveling, work, workout, predictedDayCondition, predictedDayLabel, positive, negative, netral } = req.body;
+    const { dating, eating, entertainment, selfCare, sleep, study, traveling, work, workout } = req.body;
     const userId = req.user.id;  // Get userId from the token
 
-    if (!timeStamp || dating === undefined || eating === undefined || entertainment === undefined || selfCare === undefined || sleep === undefined || study === undefined || traveling === undefined || work === undefined || workout === undefined || predictedDayCondition === undefined || predictedDayLabel === undefined || positive === undefined || negative === undefined || netral === undefined) {
+    if (dating === undefined || eating === undefined || entertainment === undefined || selfCare === undefined || sleep === undefined || study === undefined || traveling === undefined || work === undefined || workout === undefined) {
       return res.status(400).send({
         error: true,
         message: 'All fields are required'
       });
     }
 
-    const report = new Report(userId, timeStamp, dating, eating, entertainment, selfCare, sleep, study, traveling, work, workout, predictedDayCondition, predictedDayLabel, positive, negative, netral);
+    const report = new Report(userId, Number(dating), Number(eating), Number(entertainment), Number(selfCare), Number(sleep), Number(study), Number(traveling), Number(work), Number(workout));
     await report.save();
 
     return res.status(201).send({
@@ -44,6 +44,7 @@ const getReport = async (req, res) => {
     const { timeStamp, dating, eating, entertainment, selfCare, sleep, study, traveling, work, workout, predictedDayCondition, predictedDayLabel, positive, negative, netral } = report;
     return res.send({
       error: false,
+      message: 'Report fetched successfully',
       report: {
         timeStamp,
         dating,
@@ -77,7 +78,25 @@ const listReports = async (req, res) => {
     const reports = await Report.list(userId);
     return res.send({
       error: false,
-      reports
+      message: 'Reports fetched successfully',
+      reports: reports.map(report => ({
+        id: report.id,
+        timeStamp: report.timeStamp,
+        dating: report.dating,
+        eating: report.eating,
+        entertainment: report.entertainment,
+        selfCare: report.selfCare,
+        sleep: report.sleep,
+        study: report.study,
+        traveling: report.traveling,
+        work: report.work,
+        workout: report.workout,
+        predictedDayCondition: report.predictedDayCondition,
+        predictedDayLabel: report.predictedDayLabel,
+        positive: report.positive,
+        negative: report.negative,
+        netral: report.netral
+      }))
     });
   } catch (error) {
     console.error("Error listing reports:", error.message);
@@ -88,8 +107,39 @@ const listReports = async (req, res) => {
   }
 };
 
+const updateReport = async (req, res) => {
+  try {
+    const { reportId } = req.params;
+    const userId = req.user.id;  // Get userId from the token
+    const updates = req.body;
+
+    const allowedUpdates = ['predictedDayCondition', 'predictedDayLabel', 'positive', 'negative', 'netral'];
+    const isValidOperation = Object.keys(updates).every(update => allowedUpdates.includes(update));
+
+    if (!isValidOperation) {
+      return res.status(400).send({
+        error: true,
+        message: 'Invalid updates!'
+      });
+    }
+
+    await Report.update(userId, reportId, updates);
+    return res.send({
+      error: false,
+      message: 'Report updated successfully'
+    });
+  } catch (error) {
+    console.error("Error updating report:", error.message);
+    return res.status(500).send({
+      error: true,
+      message: 'Internal server error'
+    });
+  }
+};
+
 module.exports = {
   createReport,
   getReport,
-  listReports
+  listReports,
+  updateReport
 };

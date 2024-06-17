@@ -7,11 +7,13 @@ class Activity {
   constructor(userId, quality, activities, duration, notes) {
     this.id = nanoid(16);
     this.userId = userId;
-    this.quality = quality;
+    this.quality = Number(quality);
     this.activities = activities;
-    this.duration = duration;
+    this.duration = Number(duration);
     this.notes = notes;
-    this.time_stamp = dayjs().format('YYYY-MM-DD');
+    const now = dayjs();
+    this.time_stamp = now.format('YYYY-MM-DD');
+    this.time = now.format('HH:mm:ss');
   }
 
   static async get(userId, activityId) {
@@ -25,7 +27,7 @@ class Activity {
 
   static async list(userId) {
     const { db } = await dbPromise;
-    const snapshot = await db.collection("users").doc(userId).collection("activities").get();
+    const snapshot = await db.collection("users").doc(userId).collection("activities").orderBy("time_stamp", "desc").orderBy("time", "desc").get();
     return snapshot.docs.map(doc => doc.data());
   }
 
@@ -39,12 +41,15 @@ class Activity {
       duration: this.duration,
       notes: this.notes,
       time_stamp: this.time_stamp,
+      time: this.time
     });
     return this;
   }
 
   static async update(userId, activityId, updates) {
     const { db } = await dbPromise;
+    if (updates.quality !== undefined) updates.quality = Number(updates.quality);
+    if (updates.duration !== undefined) updates.duration = Number(updates.duration);
     await db.collection("users").doc(userId).collection("activities").doc(activityId).update(updates);
   }
 

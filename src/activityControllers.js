@@ -6,7 +6,7 @@ const createActivity = async (req, res) => {
     const { quality, activities, duration, notes } = req.body;
     const userId = req.user.id;  // Get userId from the token
 
-    if (!quality || !activities || !duration) {
+    if (quality === undefined || activities === undefined || duration === undefined) {
       return res.status(400).send({
         error: true,
         message: 'Quality, activities, and duration are required'
@@ -41,9 +41,10 @@ const getActivity = async (req, res) => {
         message: 'Activity not found'
       });
     }
-    const { time_stamp, quality, activities, duration, notes } = activity;
+    const { time_stamp, time, quality, activities, duration, notes } = activity;
     return res.send({
       error: false,
+      message: 'Activity fetched successfully',
       activity: {
         time_stamp,
         quality,
@@ -65,9 +66,17 @@ const listActivities = async (req, res) => {
   try {
     const userId = req.user.id;  // Get userId from the token
     const activities = await Activity.list(userId);
+    activities.sort((a, b) => {
+      if (a.time_stamp === b.time_stamp) {
+        return new Date(`1970-01-01T${b.time}Z`) - new Date(`1970-01-01T${a.time}Z`);
+      }
+      return new Date(b.time_stamp) - new Date(a.time_stamp);
+    });
     return res.send({
       error: false,
+      message: 'Activities fetched successfully',
       activities: activities.map(activity => ({
+        id: activity.id,
         time_stamp: activity.time_stamp,
         quality: activity.quality,
         activities: activity.activities,
