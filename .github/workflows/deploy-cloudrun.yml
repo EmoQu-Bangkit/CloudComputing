@@ -45,7 +45,8 @@ jobs:
           image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY_NAME }}/${{ env.SERVICE }}:${{ github.sha }}
           env_vars: |
             FIREBASE_DATABASE_URL=${{ secrets.FIREBASE_DATABASE_URL }},
-            KEY_JWT=${{ secrets.KEY_JWT }}
+            KEY_JWT=${{ secrets.KEY_JWT }},
+            GOOGLE_CLOUD_BUCKET_NAME=${{ secrets.GOOGLE_CLOUD_BUCKET_NAME }}
             
       - name: Show Output
         run: echo ${{ steps.deploy.outputs.url }}
