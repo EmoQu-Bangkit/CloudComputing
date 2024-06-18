@@ -1,12 +1,13 @@
 // report.js
 const dbPromise = require("../database/db.js");
 const { nanoid } = require("nanoid");
+const moment = require("moment-timezone");
 
 class Report {
   constructor(userId, dating, eating, entertainment, selfCare, sleep, study, traveling, work, workout) {
     this.id = nanoid(16);
     this.userId = userId;
-    this.timeStamp = new Date().toISOString().split('T')[0];  // Generate timeStamp automatically
+    this.timeStamp = moment().tz("Asia/Jakarta").format('YYYY-MM-DD');  // Generate timeStamp based on Jakarta timezone
     this.dating = Number(dating);
     this.eating = Number(eating);
     this.entertainment = Number(entertainment);

@@ -13,6 +13,18 @@ const createActivity = async (req, res) => {
       });
     }
 
+    if (isNaN(quality) || isNaN(duration)) {
+
+      return res.status(400).send({
+
+        error: true,
+
+        message: 'Quality and duration must be numbers'
+
+      });
+
+    }
+
     const activity = new Activity(userId, quality, activities, duration, notes);
     await activity.save();
 
@@ -46,6 +58,7 @@ const getActivity = async (req, res) => {
       error: false,
       message: 'Activity fetched successfully',
       activity: {
+        time,
         time_stamp,
         quality,
         activities,
@@ -77,6 +90,7 @@ const listActivities = async (req, res) => {
       message: 'Activities fetched successfully',
       activities: activities.map(activity => ({
         id: activity.id,
+        time: activity.time,
         time_stamp: activity.time_stamp,
         quality: activity.quality,
         activities: activity.activities,
@@ -98,6 +112,30 @@ const updateActivity = async (req, res) => {
     const { activityId } = req.params;
     const userId = req.user.id;  // Get userId from the token
     const updates = req.body;
+
+    if (updates.quality !== undefined && isNaN(updates.quality)) {
+
+      return res.status(400).send({
+
+        error: true,
+
+        message: 'Quality must be a number'
+
+      });
+
+    }
+
+    if (updates.duration !== undefined && isNaN(updates.duration)) {
+
+      return res.status(400).send({
+
+        error: true,
+
+        message: 'Duration must be a number'
+
+      });
+
+    }
 
     await Activity.update(userId, activityId, updates);
     return res.send({

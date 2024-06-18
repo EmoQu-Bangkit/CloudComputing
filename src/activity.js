@@ -1,7 +1,7 @@
-// activity.js
 const dbPromise = require("../database/db.js");
 const { nanoid } = require("nanoid");
-const dayjs = require("dayjs");
+const moment = require("moment-timezone");
+const admin = require('firebase-admin');
 
 class Activity {
   constructor(userId, quality, activities, duration, notes) {
@@ -11,9 +11,19 @@ class Activity {
     this.activities = activities;
     this.duration = Number(duration);
     this.notes = notes;
-    const now = dayjs();
-    this.time_stamp = now.format('YYYY-MM-DD');
-    this.time = now.format('HH:mm:ss');
+  }
+
+  static async getServerTime() {
+    const { db } = await dbPromise;
+    const docRef = db.collection('server_time').doc('time');
+    await docRef.set({ timestamp: admin.firestore.FieldValue.serverTimestamp() });
+    const doc = await docRef.get();
+    const serverTimestamp = doc.data().timestamp.toDate();
+    const timeStampJakarta = moment(serverTimestamp).tz("Asia/Jakarta");
+    return {
+      time_stamp: timeStampJakarta.format('YYYY-MM-DD'),
+      time: timeStampJakarta.format('HH:mm:ss')
+    };
   }
 
   static async get(userId, activityId) {
@@ -27,12 +37,17 @@ class Activity {
 
   static async list(userId) {
     const { db } = await dbPromise;
-    const snapshot = await db.collection("users").doc(userId).collection("activities").orderBy("time_stamp", "desc").orderBy("time", "desc").get();
+    const snapshot = await db.collection("users").doc(userId).collection("activities")
+      .orderBy("time_stamp", "desc")
+      .orderBy("time", "desc")
+      .get();
     return snapshot.docs.map(doc => doc.data());
   }
 
   async save() {
     const { db } = await dbPromise;
+    const { time_stamp, time } = await Activity.getServerTime();
+
     await db.collection("users").doc(this.userId).collection("activities").doc(this.id).set({
       id: this.id,
       userId: this.userId,
@@ -40,8 +55,8 @@ class Activity {
       activities: this.activities,
       duration: this.duration,
       notes: this.notes,
-      time_stamp: this.time_stamp,
-      time: this.time
+      time_stamp: time_stamp,
+      time: time
     });
     return this;
   }
