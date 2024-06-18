@@ -41,11 +41,12 @@ const getReport = async (req, res) => {
         message: 'Report not found'
       });
     }
-    const { timeStamp, dating, eating, entertainment, selfCare, sleep, study, traveling, work, workout, predictedDayCondition, predictedDayLabel, positive, negative, netral } = report;
+    const { timeStamp, time, dating, eating, entertainment, selfCare, sleep, study, traveling, work, workout, predictedDayCondition, predictedDayLabel, positive, negative, netral } = report;
     return res.send({
       error: false,
       message: 'Report fetched successfully',
       report: {
+        time,
         timeStamp,
         dating,
         eating,
@@ -56,11 +57,11 @@ const getReport = async (req, res) => {
         traveling,
         work,
         workout,
-        predictedDayCondition,
-        predictedDayLabel,
-        positive,
-        negative,
-        netral
+        predictedDayCondition: Number(predictedDayCondition),
+        predictedDayLabel: Number(predictedDayLabel),
+        positive: Number(positive),
+        negative: Number(negative),
+        netral: Number(netral)
       }
     });
   } catch (error) {
@@ -81,6 +82,7 @@ const listReports = async (req, res) => {
       message: 'Reports fetched successfully',
       reports: reports.map(report => ({
         id: report.id,
+        time: report.time,
         timeStamp: report.timeStamp,
         dating: report.dating,
         eating: report.eating,
@@ -91,11 +93,11 @@ const listReports = async (req, res) => {
         traveling: report.traveling,
         work: report.work,
         workout: report.workout,
-        predictedDayCondition: report.predictedDayCondition,
-        predictedDayLabel: report.predictedDayLabel,
-        positive: report.positive,
-        negative: report.negative,
-        netral: report.netral
+        predictedDayCondition: Number(report.predictedDayCondition),
+        predictedDayLabel: Number(report.predictedDayLabel),
+        positive: Number(report.positive),
+        negative: Number(report.negative),
+        netral: Number(report.netral)
       }))
     });
   } catch (error) {

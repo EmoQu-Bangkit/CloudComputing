@@ -8,6 +8,7 @@ class Report {
     this.id = nanoid(16);
     this.userId = userId;
     this.timeStamp = moment().tz("Asia/Jakarta").format('YYYY-MM-DD');  // Generate timeStamp based on Jakarta timezone
+    this.time = moment().tz("Asia/Jakarta").format('HH:mm:ss');  // Generate time based on Jakarta timezone
     this.dating = Number(dating);
     this.eating = Number(eating);
     this.entertainment = Number(entertainment);
@@ -40,6 +41,7 @@ class Report {
       id: this.id,
       userId: this.userId,
       timeStamp: this.timeStamp,
+      time: this.time,
       dating: this.dating,
       eating: this.eating,
       entertainment: this.entertainment,
@@ -55,12 +57,15 @@ class Report {
 
   static async update(userId, reportId, updates) {
     const { db } = await dbPromise;
-    await db.collection("users").doc(userId).collection("reports").doc(reportId).update({
+    const updatedData = {
       ...updates,
+      predictedDayCondition: updates.predictedDayCondition !== undefined ? Number(updates.predictedDayCondition) : undefined,
+      predictedDayLabel: updates.predictedDayLabel !== undefined ? Number(updates.predictedDayLabel) : undefined,
       positive: updates.positive !== undefined ? Number(updates.positive) : undefined,
       negative: updates.negative !== undefined ? Number(updates.negative) : undefined,
       netral: updates.netral !== undefined ? Number(updates.netral) : undefined
-    });
+    };
+    await db.collection("users").doc(userId).collection("reports").doc(reportId).update(updatedData);
   }
 }
 
