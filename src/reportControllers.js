@@ -41,7 +41,7 @@ const getReport = async (req, res) => {
         message: 'Report not found'
       });
     }
-    const { timeStamp, time, dating, eating, entertainment, selfCare, sleep, study, traveling, work, workout, predictedDayCondition, predictedDayLabel, positive, negative, netral } = report;
+    const { timeStamp, dating, eating, entertainment, selfCare, sleep, study, traveling, work, workout, predictedDayCondition, predictedDayLabel, positive, negative, netral } = report;
     return res.send({
       error: false,
       message: 'Report fetched successfully',
@@ -57,11 +57,11 @@ const getReport = async (req, res) => {
         traveling,
         work,
         workout,
-        predictedDayCondition: Number(predictedDayCondition),
-        predictedDayLabel: Number(predictedDayLabel),
-        positive: Number(positive),
-        negative: Number(negative),
-        netral: Number(netral)
+        predictedDayCondition,
+        predictedDayLabel,
+        positive,
+        negative,
+        netral
       }
     });
   } catch (error) {
@@ -93,11 +93,11 @@ const listReports = async (req, res) => {
         traveling: report.traveling,
         work: report.work,
         workout: report.workout,
-        predictedDayCondition: Number(report.predictedDayCondition),
-        predictedDayLabel: Number(report.predictedDayLabel),
-        positive: Number(report.positive),
-        negative: Number(report.negative),
-        netral: Number(report.netral)
+        predictedDayCondition: report.predictedDayCondition,
+        predictedDayLabel: report.predictedDayLabel,
+        positive: report.positive,
+        negative: report.negative,
+        netral: report.netral
       }))
     });
   } catch (error) {

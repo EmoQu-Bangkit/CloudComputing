@@ -57,15 +57,12 @@ class Report {
 
   static async update(userId, reportId, updates) {
     const { db } = await dbPromise;
-    const updatedData = {
+    await db.collection("users").doc(userId).collection("reports").doc(reportId).update({
       ...updates,
-      predictedDayCondition: updates.predictedDayCondition !== undefined ? Number(updates.predictedDayCondition) : undefined,
-      predictedDayLabel: updates.predictedDayLabel !== undefined ? Number(updates.predictedDayLabel) : undefined,
       positive: updates.positive !== undefined ? Number(updates.positive) : undefined,
       negative: updates.negative !== undefined ? Number(updates.negative) : undefined,
       netral: updates.netral !== undefined ? Number(updates.netral) : undefined
-    };
-    await db.collection("users").doc(userId).collection("reports").doc(reportId).update(updatedData);
+    });
   }
 }
 
