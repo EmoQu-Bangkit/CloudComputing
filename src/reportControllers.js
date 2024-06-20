@@ -1,31 +1,116 @@
 // reportControllers.js
-const Report = require('./report');
+const Report = require("./report");
 
 const createReport = async (req, res) => {
   try {
-    const { dating, eating, entertainment, selfCare, sleep, study, traveling, work, workout } = req.body;
-    const userId = req.user.id;  // Get userId from the token
+    const {
+      time_stamp,
+      dating,
+      eating,
+      entertainment,
+      selfCare,
+      sleep,
+      study,
+      traveling,
+      work,
+      workout,
+      predictedDayCondition,
+      predictedDayLabel,
+      positive,
+      negative,
+      netral,
+      dateTips,
+      eatTips,
+      entertainmentTips,
+      selfCareTips,
+      sleepTips,
+      studyTips,
+      travelingTips,
+      workTips,
+      workoutTips,
+    } = req.body;
+    const userId = req.user.id; // Get userId from the token
 
-    if (dating === undefined || eating === undefined || entertainment === undefined || selfCare === undefined || sleep === undefined || study === undefined || traveling === undefined || work === undefined || workout === undefined) {
+    if (
+      !time_stamp ||
+      dating === undefined ||
+      eating === undefined ||
+      entertainment === undefined ||
+      selfCare === undefined ||
+      sleep === undefined ||
+      study === undefined ||
+      traveling === undefined ||
+      work === undefined ||
+      workout === undefined ||
+      predictedDayCondition === undefined ||
+      predictedDayLabel === undefined ||
+      positive === undefined ||
+      negative === undefined ||
+      netral === undefined ||
+      dateTips === undefined ||
+      eatTips === undefined ||
+      entertainmentTips === undefined ||
+      selfCareTips === undefined ||
+      sleepTips === undefined ||
+      studyTips === undefined ||
+      travelingTips === undefined ||
+      workTips === undefined ||
+      workoutTips === undefined
+    ) {
       return res.status(400).send({
         error: true,
-        message: 'All fields are required'
+        message: "All fields are required",
       });
     }
 
-    const report = new Report(userId, Number(dating), Number(eating), Number(entertainment), Number(selfCare), Number(sleep), Number(study), Number(traveling), Number(work), Number(workout));
+    // Check if a report already exists with the same timeStamp
+    const existingReport = await Report.findByDate(userId, date);
+    if (existingReport) {
+      return res.status(400).send({
+        error: true,
+        message: "A report already exists for this date",
+      });
+    }
+
+    const report = new Report(
+      userId,
+      time_stamp,
+      Number(dating),
+      Number(eating),
+      Number(entertainment),
+      Number(selfCare),
+      Number(sleep),
+      Number(study),
+      Number(traveling),
+      Number(work),
+      Number(workout),
+      predictedDayCondition,
+      predictedDayLabel,
+      Number(positive),
+      Number(negative),
+      Number(netral),
+      dateTips,
+      eatTips,
+      entertainmentTips,
+      selfCareTips,
+      sleepTips,
+      studyTips,
+      travelingTips,
+      workTips,
+      workoutTips
+    );
     await report.save();
 
     return res.status(201).send({
       error: false,
-      message: 'Report created successfully',
-      id: report.id  // Return only the id
+      message: "Report created successfully",
+      id: report.id, // Return only the id
     });
   } catch (error) {
     console.error("Error creating report:", error.message);
     return res.status(500).send({
       error: true,
-      message: 'Internal server error'
+      message: "Internal server error",
     });
   }
 };
@@ -33,21 +118,48 @@ const createReport = async (req, res) => {
 const getReport = async (req, res) => {
   try {
     const { reportId } = req.params;
-    const userId = req.user.id;  // Get userId from the token
+    const userId = req.user.id; // Get userId from the token
     const report = await Report.get(userId, reportId);
     if (!report) {
       return res.status(404).send({
         error: true,
-        message: 'Report not found'
+        message: "Report not found",
       });
     }
-    const { timeStamp, dating, eating, entertainment, selfCare, sleep, study, traveling, work, workout, predictedDayCondition, predictedDayLabel, positive, negative, netral } = report;
+    const {
+      date,
+      time_stamp,
+      dating,
+      eating,
+      entertainment,
+      selfCare,
+      sleep,
+      study,
+      traveling,
+      work,
+      workout,
+      predictedDayCondition,
+      predictedDayLabel,
+      positif,
+      negatif,
+      netral,
+      dateTips,
+      eatTips,
+      entertainmentTips,
+      selfCareTips,
+      sleepTips,
+      studyTips,
+      travelingTips,
+      workTips,
+      workoutTips
+    } = report;
     return res.send({
       error: false,
-      message: 'Report fetched successfully',
+      message: "Report fetched successfully",
       report: {
+        date,
         time,
-        timeStamp,
+        time_stamp,
         dating,
         eating,
         entertainment,
@@ -59,31 +171,41 @@ const getReport = async (req, res) => {
         workout,
         predictedDayCondition,
         predictedDayLabel,
-        positive,
-        negative,
-        netral
-      }
+        positif,
+        negatif,
+        netral,
+        dateTips,
+        eatTips,
+        entertainmentTips,
+        selfCareTips,
+        sleepTips,
+        studyTips,
+        travelingTips,
+        workTips,
+        workoutTips
+      },
     });
   } catch (error) {
     console.error("Error fetching report:", error.message);
     return res.status(500).send({
       error: true,
-      message: 'Internal server error'
+      message: "Internal server error",
     });
   }
 };
 
 const listReports = async (req, res) => {
   try {
-    const userId = req.user.id;  // Get userId from the token
+    const userId = req.user.id; // Get userId from the token
     const reports = await Report.list(userId);
     return res.send({
       error: false,
-      message: 'Reports fetched successfully',
-      reports: reports.map(report => ({
+      message: "Reports fetched successfully",
+      reports: reports.map((report) => ({
         id: report.id,
+        date: report.date,
         time: report.time,
-        timeStamp: report.timeStamp,
+        time_stamp: report.time_stamp,
         dating: report.dating,
         eating: report.eating,
         entertainment: report.entertainment,
@@ -95,46 +217,25 @@ const listReports = async (req, res) => {
         workout: report.workout,
         predictedDayCondition: report.predictedDayCondition,
         predictedDayLabel: report.predictedDayLabel,
-        positive: report.positive,
-        negative: report.negative,
-        netral: report.netral
-      }))
+        positif: report.positif,
+        negatif: report.negatif,
+        netral: report.netral,
+        dateTips: report.dateTips,
+        eatTips: report.eatTips,
+        entertainmentTips: report.entertainmentTips,
+        selfCareTips: report.selfCareTips,
+        sleepTips: report.sleepTips,
+        studyTips: report.studyTips,
+        travelingTips: report.travelingTips,
+        workTips: report.workTips,
+        workoutTips: report.workoutTips
+      })),
     });
   } catch (error) {
     console.error("Error listing reports:", error.message);
     return res.status(500).send({
       error: true,
-      message: 'Internal server error'
-    });
-  }
-};
-
-const updateReport = async (req, res) => {
-  try {
-    const { reportId } = req.params;
-    const userId = req.user.id;  // Get userId from the token
-    const updates = req.body;
-
-    const allowedUpdates = ['predictedDayCondition', 'predictedDayLabel', 'positive', 'negative', 'netral'];
-    const isValidOperation = Object.keys(updates).every(update => allowedUpdates.includes(update));
-
-    if (!isValidOperation) {
-      return res.status(400).send({
-        error: true,
-        message: 'Invalid updates!'
-      });
-    }
-
-    await Report.update(userId, reportId, updates);
-    return res.send({
-      error: false,
-      message: 'Report updated successfully'
-    });
-  } catch (error) {
-    console.error("Error updating report:", error.message);
-    return res.status(500).send({
-      error: true,
-      message: 'Internal server error'
+      message: "Internal server error",
     });
   }
 };
@@ -143,5 +244,4 @@ module.exports = {
   createReport,
   getReport,
   listReports,
-  updateReport
 };

@@ -4,11 +4,38 @@ const { nanoid } = require("nanoid");
 const moment = require("moment-timezone");
 
 class Report {
-  constructor(userId, dating, eating, entertainment, selfCare, sleep, study, traveling, work, workout) {
+  constructor(
+    userId,
+    time_stamp,
+    dating,
+    eating,
+    entertainment,
+    selfCare,
+    sleep,
+    study,
+    traveling,
+    work,
+    workout,
+    predictedDayCondition,
+    predictedDayLabel,
+    positive,
+    negative,
+    netral,
+    dateTips,
+    eatTips,
+    entertainmentTips,
+    selfCareTips,
+    sleepTips,
+    studyTips,
+    travelingTips,
+    workTips,
+    workoutTips
+  ) {
     this.id = nanoid(16);
     this.userId = userId;
-    this.timeStamp = moment().tz("Asia/Jakarta").format('YYYY-MM-DD');  // Generate timeStamp based on Jakarta timezone
-    this.time = moment().tz("Asia/Jakarta").format('HH:mm:ss');  // Generate time based on Jakarta timezone
+    this.date = moment().tz("Asia/Jakarta").format("YYYY-MM-DD");
+    this.time = moment().tz("Asia/Jakarta").format("HH:mm:ss");
+    this.time_stamp = time_stamp;
     this.dating = Number(dating);
     this.eating = Number(eating);
     this.entertainment = Number(entertainment);
@@ -18,11 +45,30 @@ class Report {
     this.traveling = Number(traveling);
     this.work = Number(work);
     this.workout = Number(workout);
+    this.predictedDayCondition = predictedDayCondition;
+    this.predictedDayLabel = predictedDayLabel;
+    this.positive = Number(positive);
+    this.negative = Number(negative);
+    this.netral = Number(netral);
+    this.dateTips = dateTips;
+    this.eatTips = eatTips;
+    this.entertainmentTips = entertainmentTips;
+    this.selfCareTips = selfCareTips;
+    this.sleepTips = sleepTips;
+    this.studyTips = studyTips;
+    this.travelingTips = travelingTips;
+    this.workTips = workTips;
+    this.workoutTips = workoutTips;
   }
 
   static async get(userId, reportId) {
     const { db } = await dbPromise;
-    const doc = await db.collection("users").doc(userId).collection("reports").doc(reportId).get();
+    const doc = await db
+      .collection("users")
+      .doc(userId)
+      .collection("reports")
+      .doc(reportId)
+      .get();
     if (!doc.exists) {
       return null;
     }
@@ -31,38 +77,66 @@ class Report {
 
   static async list(userId) {
     const { db } = await dbPromise;
-    const snapshot = await db.collection("users").doc(userId).collection("reports").get();
-    return snapshot.docs.map(doc => doc.data());
+    const snapshot = await db
+      .collection("users")
+      .doc(userId)
+      .collection("reports")
+      .get();
+    return snapshot.docs.map((doc) => doc.data());
+  }
+
+  static async findByDate(userId, date) {
+    const { db } = await dbPromise;
+    const snapshot = await db
+      .collection("users")
+      .doc(userId)
+      .collection("reports")
+      .where("date", "==", date)
+      .get();
+    if (snapshot.empty) {
+      return null;
+    }
+    return snapshot.docs[0].data();
   }
 
   async save() {
     const { db } = await dbPromise;
-    await db.collection("users").doc(this.userId).collection("reports").doc(this.id).set({
-      id: this.id,
-      userId: this.userId,
-      timeStamp: this.timeStamp,
-      time: this.time,
-      dating: this.dating,
-      eating: this.eating,
-      entertainment: this.entertainment,
-      selfCare: this.selfCare,
-      sleep: this.sleep,
-      study: this.study,
-      traveling: this.traveling,
-      work: this.work,
-      workout: this.workout
-    });
+    await db
+      .collection("users")
+      .doc(this.userId)
+      .collection("reports")
+      .doc(this.id)
+      .set({
+        id: this.id,
+        userId: this.userId,
+        date: this.date,
+        time: this.time,
+        time_stamp: this.time_stamp,
+        dating: this.dating,
+        eating: this.eating,
+        entertainment: this.entertainment,
+        selfCare: this.selfCare,
+        sleep: this.sleep,
+        study: this.study,
+        traveling: this.traveling,
+        work: this.work,
+        workout: this.workout,
+        predictedDayCondition: this.predictedDayCondition,
+        predictedDayLabel: this.predictedDayLabel,
+        positive: this.positive,
+        negative: this.negative,
+        netral: this.netral,
+        dateTips: this.dateTips,
+        eatTips: this.eatTips,
+        entertainmentTips: this.entertainmentTips,
+        selfCareTips: this.selfCareTips,
+        sleepTips: this.sleepTips,
+        studyTips: this.studyTips,
+        travelingTips: this.travelingTips,
+        workTips: this.workTips,
+        workoutTips: this.workoutTips,
+      });
     return this;
-  }
-
-  static async update(userId, reportId, updates) {
-    const { db } = await dbPromise;
-    await db.collection("users").doc(userId).collection("reports").doc(reportId).update({
-      ...updates,
-      positive: updates.positive !== undefined ? Number(updates.positive) : undefined,
-      negative: updates.negative !== undefined ? Number(updates.negative) : undefined,
-      netral: updates.netral !== undefined ? Number(updates.netral) : undefined
-    });
   }
 }
 
