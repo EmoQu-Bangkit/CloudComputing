@@ -1,5 +1,6 @@
 // reportControllers.js
 const Report = require("./report");
+const moment = require('moment-timezone');
 
 const createReport = async (req, res) => {
   try {
@@ -30,6 +31,7 @@ const createReport = async (req, res) => {
       workoutTips,
     } = req.body;
     const userId = req.user.id; // Get userId from the token
+    const date = moment().tz("Asia/Jakarta").format('YYYY-MM-DD');
 
     if (
       !time_stamp ||
