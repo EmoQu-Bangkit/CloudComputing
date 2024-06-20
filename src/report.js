@@ -18,8 +18,8 @@ class Report {
     workout,
     predictedDayCondition,
     predictedDayLabel,
-    positive,
-    negative,
+    positif,
+    negatif,
     netral,
     dateTips,
     eatTips,
@@ -47,8 +47,8 @@ class Report {
     this.workout = Number(workout);
     this.predictedDayCondition = predictedDayCondition;
     this.predictedDayLabel = predictedDayLabel;
-    this.positive = Number(positive);
-    this.negative = Number(negative);
+    this.positif = Number(positif);
+    this.negatif = Number(negatif);
     this.netral = Number(netral);
     this.dateTips = dateTips;
     this.eatTips = eatTips;
@@ -123,8 +123,8 @@ class Report {
         workout: this.workout,
         predictedDayCondition: this.predictedDayCondition,
         predictedDayLabel: this.predictedDayLabel,
-        positive: this.positive,
-        negative: this.negative,
+        positif: this.positif,
+        negatif: this.negatif,
         netral: this.netral,
         dateTips: this.dateTips,
         eatTips: this.eatTips,

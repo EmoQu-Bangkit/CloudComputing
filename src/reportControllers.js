@@ -16,8 +16,8 @@ const createReport = async (req, res) => {
       workout,
       predictedDayCondition,
       predictedDayLabel,
-      positive,
-      negative,
+      positif,
+      negatif,
       netral,
       dateTips,
       eatTips,
@@ -44,8 +44,8 @@ const createReport = async (req, res) => {
       workout === undefined ||
       predictedDayCondition === undefined ||
       predictedDayLabel === undefined ||
-      positive === undefined ||
-      negative === undefined ||
+      positif === undefined ||
+      negatif === undefined ||
       netral === undefined ||
       dateTips === undefined ||
       eatTips === undefined ||
@@ -86,8 +86,8 @@ const createReport = async (req, res) => {
       Number(workout),
       predictedDayCondition,
       predictedDayLabel,
-      Number(positive),
-      Number(negative),
+      Number(positif),
+      Number(negatif),
       Number(netral),
       dateTips,
       eatTips,
